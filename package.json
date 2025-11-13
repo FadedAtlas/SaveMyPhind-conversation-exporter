@@ -1,0 +1,27 @@
+{
+  "name": "Imba-WebExt",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun scripts/bundle/build.js --watch --mode=development",
+    "dev:chrome": "bun scripts/bundle/build.js --watch --mode=development --browser=chrome",
+    "dev:firefox": "bun scripts/bundle/build.js --watch --mode=development --browser=firefox",
+    "build": "bun scripts/bundle/build.js --mode=development",
+    "build:chrome": "bun scripts/bundle/build.js --mode=development --browser=chrome",
+    "build:firefox": "bun scripts/bundle/build.js --mode=development --browser=firefox",
+    "prod": "bun run zip:chrome && bun run zip:firefox",
+    "zip:chrome": "bun scripts/bundle/build.js --mode=production --browser=chrome && bun scripts/zip.js --browser=chrome",
+    "zip:firefox": "bun scripts/bundle/build.js --mode=production --browser=firefox && bun scripts/zip.js --browser=firefox",
+    "test": "bun run scripts/tests/build.js && bun test test.local",
+    "test:watch": "bun run scripts/tests/build.js --watch && bun test test.local"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.12.0"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1",
+    "imba": "^2.0.0-alpha.247",
+    "vite": "^7.2.0",
+    "vite-plugin-imba": "^0.10.2"
+  }
+}
