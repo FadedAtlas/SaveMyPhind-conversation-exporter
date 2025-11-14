@@ -1,6 +1,6 @@
 {
-  "name": "Imba-WebExt",
-  "version": "1.0.0",
+  "name": "Save my Chatbot",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "dev": "bun scripts/bundle/build.js --watch --mode=development",
