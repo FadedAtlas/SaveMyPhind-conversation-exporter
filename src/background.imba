@@ -29,12 +29,20 @@ browser.action.onClicked.addListener do(currentTabInfos\(browser.tabs.tab))
 	console.log "HERE!", pageInfos
 
 	# 2. Get webpage extraction config
-	# const siteConfig\Object = getSiteConfig pageInfos
-	# console.log siteConfig
-	# const userConfig\Object = getUserConfig!
-	# const siteContent\Array<HTMLElement> = extractSiteContent siteConfig userConfig
-	# const outputContent\Array<String> = formatContent siteConfig userConfig.format
-	# generateOutput outputContent
+	const pageConfig\Object = getWebpageExtractionConfig extractablePage
+	console.log pageConfig
+
+	# 3. Get user extraction config
+	const userConfig\Object = getUserConfig!
+
+	# 4. Extract webpage content
+	const pageContent\Array<HTMLElement> = extractWebpageContent pageConfig, userConfig
+
+	# 5. Format content
+	const outputContent\Object<key:String> = formatContent pageContent, userConfig
+
+	# 6. Generate output
+	generateOutput outputContent
 
 const EXTRACTION_ALLOWED_PAGES =
 	"PhindSearch": "www.phind.com/search"
@@ -56,3 +64,19 @@ def checkWebpageExtractable pageInfos
 		if webpageUrl..startsWith pageUrl
 			return pageName
 	return false
+
+
+def getWebpageExtractionConfig pageConfigName
+	return {}
+
+def getUserConfig
+	return {}
+
+def extractWebpageContent pageConfig, userConfig
+	return []
+
+def formatContent pageContent, userConfig
+	return {}
+
+def generateOutput outputContent
+	console.log "EXTRACTION!"
