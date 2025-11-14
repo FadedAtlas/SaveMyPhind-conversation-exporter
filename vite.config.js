@@ -44,7 +44,7 @@ export default defineConfig(({ command, mode }) => {
         ...baseConfig.build,
         rollupOptions: {
           input: {
-            [buildType]: resolve(__dirname, `src/${buildType}.imba`)
+            [buildType]: resolve(__dirname, `src/${buildType}/${buildType}.imba`)
           },
           output: {
             format: 'iife', // IIFE fonctionne avec une seule entrée
