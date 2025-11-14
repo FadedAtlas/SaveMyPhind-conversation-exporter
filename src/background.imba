@@ -18,12 +18,18 @@ browser.runtime.onInstalled..addListener do(details)
 browser.action.onClicked.addListener do(currentTabInfos\(browser.tabs.tab))
 	console.info("Icon clicked")
 
-	# Launch scapping
-	const webpageInfos\Object = currentTabInfos
-	const extractablePage\(String|false) = checkWebpageExtractable webpageInfos
+	# --- Launch scapping ---
+	# 1. Get webpage infos
+	const extractablePage\(String|false) = checkWebpageExtractable currentTabInfos
 	return if !extractablePage
-	console.log "HERE!"
-	# const siteConfig\Object = getSiteConfig webpageInfos
+	const pageInfos = {
+		extractablePage
+		...currentTabInfos
+	}
+	console.log "HERE!", pageInfos
+
+	# 2. Get webpage extraction config
+	# const siteConfig\Object = getSiteConfig pageInfos
 	# console.log siteConfig
 	# const userConfig\Object = getUserConfig!
 	# const siteContent\Array<HTMLElement> = extractSiteContent siteConfig userConfig
@@ -43,11 +49,8 @@ const EXTRACTION_ALLOWED_PAGES =
 	"ClaudeShare": "claude.ai/share"
 
 
-def checkWebpageExtractable webpageInfos
-	# console.log "nice!", webpageInfos.url
-	# console.log EXTRACTION_ALLOWED_PAGES
-
-	const webpageUrl = webpageInfos.url.split("https://")[1]
+def checkWebpageExtractable pageInfos
+	const webpageUrl = pageInfos.url.split("https://")[1]
 
 	for own pageName, pageUrl of EXTRACTION_ALLOWED_PAGES
 		if webpageUrl..startsWith pageUrl
