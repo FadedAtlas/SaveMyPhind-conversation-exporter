@@ -65,7 +65,7 @@ export default defineConfig(({ command, mode }) => {
       ...baseConfig.build,
       rollupOptions: {
         input: {
-          popup: resolve(__dirname, 'src/popup/popup.html'),
+          // popup: resolve(__dirname, 'src/popup/popup.html'),
           options: resolve(__dirname, 'src/options/options.html')
         },
         output: {
