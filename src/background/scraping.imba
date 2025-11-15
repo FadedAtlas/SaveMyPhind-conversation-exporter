@@ -13,7 +13,7 @@ const EXTRACTION_ALLOWED_PAGES =
 	"ClaudeShare": "claude.ai/share"
 
 
-export def checkWebpageExtractable pageInfos
+export def checkWebpageExtractable\(String|false) pageInfos
 	const webpageUrl = pageInfos.url.split("https://")[1]
 
 	for own pageName, pageUrl of EXTRACTION_ALLOWED_PAGES
@@ -22,14 +22,16 @@ export def checkWebpageExtractable pageInfos
 	return false
 
 
-export def getWebpageExtractionConfig pageConfigName
+export def getWebpageExtractionConfig\{} pageConfigName
 	return {}
 
-export def getUserConfig
+export def getUserConfig\{}
 	return {}
 
-export def extractWebpageContent pageInfos, pageConfig, userConfig
-	const response\Object = await browser.tabs.sendMessage(pageInfos.id, {
+export def extractWebpageContent\Promise<{html: string, title: string}> pageInfos, pageConfig, userConfig
+	const response\(
+		{ success: boolean, data: { html: string, title: string }} | { success: boolean } | any
+	) = await browser.tabs.sendMessage(pageInfos.id, {
 		type: 'EXTRACT_CONTENT'
 		pageConfig
 		pageInfos
@@ -38,7 +40,9 @@ export def extractWebpageContent pageInfos, pageConfig, userConfig
 		return { success: false }
 	
 	if response..success then return response..data
-	else do console.error "Content script error:", response..error; return []
+	else 
+		console.error "Content script error:", response..error
+		return { html: '', title: '' }
 
 export def formatContent pageInfos, pageContent, userConfig
 	console.log pageContent
