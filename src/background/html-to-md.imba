@@ -8,6 +8,15 @@ export def htmlToMarkdown(html)
 	markdown = markdown.replace(/\r\n/g, '\n')
 	markdown = markdown.replace(/\r/g, '\n')
 	
+	# Suppression des balises script, style, noscript (AVANT toute conversion)
+	# Le flag 's' permet au '.' de matcher les retours à la ligne
+	markdown = markdown.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+	markdown = markdown.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+	markdown = markdown.replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, '')
+	
+	# Suppression des commentaires HTML
+	markdown = markdown.replace(/<!--[\s\S]*?-->/g, '')
+	
 	# Conversion des titres
 	markdown = markdown.replace(/<h1[^>]*>(.*?)<\/h1>/gi, '\n\n# $1\n\n')
 	markdown = markdown.replace(/<h2[^>]*>(.*?)<\/h2>/gi, '\n\n## $1\n\n')
@@ -94,7 +103,8 @@ export def htmlToMarkdown(html)
 	markdown = markdown.replace(/<hr\s*\/?>/gi, '\n\n---\n\n')
 	
 	# Suppression des balises div, span, etc. (garder le contenu)
-	markdown = markdown.replace(/<\/?(?:div|span|article|section|main|header|footer|nav|aside)[^>]*>/gi, '')
+	markdown = markdown.replace(/<\/?(?:span|article|section|main|header|footer|nav|aside)[^>]*>/gi, '')
+	markdown = markdown.replace(/<\/?(?:div)[^>]*>/gi, '\n')
 	
 	# Suppression de toutes les autres balises HTML
 	markdown = markdown.replace(/<[^>]+>/g, '')
@@ -106,9 +116,6 @@ export def htmlToMarkdown(html)
 	markdown = markdown.replace(/\ +/g, ' ')
 	markdown = markdown.replace(/\n{3,}/g, '\n\n')
 	markdown = markdown.trim()
-
-	# Nettoyage des balises script
-	markdown = markdown.replace(/<script[^>]*>(.*?)<\/script>/gi, '\n\n')
 	
 	return markdown
 
