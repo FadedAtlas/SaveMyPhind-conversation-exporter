@@ -3,7 +3,15 @@
   "{{firefox}}.manifest_version": 2,
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.phind.com/*",
+    "*://*.perplexity.ai/*",
+    "*://google.com/search*",
+    "*://chatgpt.com/*",
+    "*://*.claude.ai/*"
   ],
   "background": {
     "{{firefox}}.scripts": ["src/background.imba"],

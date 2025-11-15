@@ -1,12 +1,10 @@
 import browser from 'webextension-polyfill'
-
 console.log "Background script loaded"
 
 # Manage installation
-browser.runtime.onInstalled..addListener do(details)
+browser.runtime.onInstalled.addListener do(details)
 	if details.reason === 'install'
 		console.log "Extension installed"
-		# Initialize the storage
 		browser.storage.sync.set {
 			initialized: true
 			installDate: Date.now!
@@ -15,10 +13,9 @@ browser.runtime.onInstalled..addListener do(details)
 		console.log "Extension updated"
 
 # On icon click
-browser.action.onClicked.addListener do(currentTabInfos\(browser.tabs.tab))
-	console.info("Icon clicked")
-
-	# --- Launch scapping ---
+browser.action.onClicked.addListener do(currentTabInfos)
+	console.info "Icon clicked"
+	# --- Launch scraping ---
 	# 1. Get webpage infos
 	const extractablePage\(String|false) = checkWebpageExtractable currentTabInfos
 	return if !extractablePage
@@ -36,8 +33,8 @@ browser.action.onClicked.addListener do(currentTabInfos\(browser.tabs.tab))
 	const userConfig\Object = getUserConfig!
 
 	# 4. Extract webpage content
-	const pageContent\Array<HTMLElement> = extractWebpageContent pageConfig, userConfig
-
+	const pageContent\Array<HTMLElement> = await extractWebpageContent pageInfos, pageConfig, userConfig
+	
 	# 5. Format content
 	const outputContent\Object<key:String> = formatContent pageContent, userConfig
 
@@ -61,7 +58,7 @@ def checkWebpageExtractable pageInfos
 	const webpageUrl = pageInfos.url.split("https://")[1]
 
 	for own pageName, pageUrl of EXTRACTION_ALLOWED_PAGES
-		if webpageUrl..startsWith pageUrl
+		if webpageUrl.startsWith pageUrl
 			return pageName
 	return false
 
@@ -72,11 +69,29 @@ def getWebpageExtractionConfig pageConfigName
 def getUserConfig
 	return {}
 
-def extractWebpageContent pageConfig, userConfig
-	return []
+def extractWebpageContent pageInfos, pageConfig, userConfig
+	# Call to content-script
+	console.log pageInfos
+	try
+		const response = await browser.tabs.sendMessage pageInfos.id, {
+			type: 'EXPORT_CONTENT'
+			pageConfig: pageConfig
+			pageInfos: pageInfos
+		}
+		
+		console.log "Response from content script:", response
+		
+		if response.success
+			return response.data
+		else
+			console.error "Content script error:", response.error
+			return []
+	catch error
+		console.error "Failed to communicate with content script:", error
+		return []
 
 def formatContent pageContent, userConfig
-	return {}
+	return pageContent.html
 
 def generateOutput outputContent
-	console.log "EXTRACTION!"
+	console.log "EXTRACTION!", outputContent
