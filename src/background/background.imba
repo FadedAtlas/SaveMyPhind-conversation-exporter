@@ -36,10 +36,10 @@ browser.action.onClicked.addListener do(currentTabInfos)
 	const pageContent\Array<HTMLElement> = await extractWebpageContent pageInfos, pageConfig, userConfig
 	
 	# 5. Format content
-	const outputContent\Object<key:String> = formatContent pageContent, userConfig
+	const outputContent\Object<String:String> = formatContent pageInfos, pageContent, userConfig
 
 	# 6. Generate output
-	generateOutput outputContent
+	generateOutput pageInfos, outputContent
 
 const EXTRACTION_ALLOWED_PAGES =
 	"PhindSearch": "www.phind.com/search"
@@ -74,7 +74,7 @@ def extractWebpageContent pageInfos, pageConfig, userConfig
 	console.log pageInfos
 	try
 		const response = await browser.tabs.sendMessage pageInfos.id, {
-			type: 'EXPORT_CONTENT'
+			type: 'EXTRACT_CONTENT'
 			pageConfig: pageConfig
 			pageInfos: pageInfos
 		}
@@ -90,8 +90,14 @@ def extractWebpageContent pageInfos, pageConfig, userConfig
 		console.error "Failed to communicate with content script:", error
 		return []
 
-def formatContent pageContent, userConfig
+def formatContent pageInfos, pageContent, userConfig
+	console.log pageContent
 	return pageContent.html
 
-def generateOutput outputContent
+def generateOutput pageInfos, outputContent
 	console.log "EXTRACTION!", outputContent
+	const response = await browser.tabs.sendMessage(pageInfos.id, {
+		type: 'EXPORT_CONTENT'
+		outputContent
+	}).catch do(error)
+		console.error "Failed to communicate with content script:", error
