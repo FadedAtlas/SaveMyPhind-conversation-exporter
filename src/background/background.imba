@@ -45,7 +45,7 @@ browser.action.onClicked.addListener do(currentTabInfos)
 	const pageContent\Array<HTMLElement> = await extractWebpageContent pageInfos, pageConfig, userConfig
 	
 	# 5. Format content
-	const outputContent\Object<String:String> = formatContent pageInfos, pageContent, userConfig
+	const outputContent\Object<String:String> = formatContent pageInfos, pageContent, userConfig, pageConfig
 
 	# 6. Generate output
 	generateOutput pageInfos, outputContent
