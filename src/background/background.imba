@@ -1,4 +1,13 @@
 import browser from 'webextension-polyfill'
+import {
+	checkWebpageExtractable
+	getWebpageExtractionConfig
+	getUserConfig
+	extractWebpageContent
+	formatContent
+	generateOutput
+} from "./scraping"
+
 console.log "Background script loaded"
 
 # Manage installation
@@ -41,63 +50,3 @@ browser.action.onClicked.addListener do(currentTabInfos)
 	# 6. Generate output
 	generateOutput pageInfos, outputContent
 
-const EXTRACTION_ALLOWED_PAGES =
-	"PhindSearch": "www.phind.com/search"
-	"Perplexity": "www.perplexity.ai/search"
-	"PerplexityPages": "www.perplexity.ai/page"
-	"MaxAIGoogle": "www.google.com/search"
-	"ChatGPT": "chatgpt.com/c"
-	"ChatGPTShare": "chatgpt.com/share"
-	"ChatGPTBots": "chatgpt.com/g"
-	"ChatGPTSignedOut": "chatgpt.com"
-	"ClaudeChat": "claude.ai/chat"
-	"ClaudeShare": "claude.ai/share"
-
-
-def checkWebpageExtractable pageInfos
-	const webpageUrl = pageInfos.url.split("https://")[1]
-
-	for own pageName, pageUrl of EXTRACTION_ALLOWED_PAGES
-		if webpageUrl.startsWith pageUrl
-			return pageName
-	return false
-
-
-def getWebpageExtractionConfig pageConfigName
-	return {}
-
-def getUserConfig
-	return {}
-
-def extractWebpageContent pageInfos, pageConfig, userConfig
-	# Call to content-script
-	console.log pageInfos
-	try
-		const response = await browser.tabs.sendMessage pageInfos.id, {
-			type: 'EXTRACT_CONTENT'
-			pageConfig: pageConfig
-			pageInfos: pageInfos
-		}
-		
-		console.log "Response from content script:", response
-		
-		if response.success
-			return response.data
-		else
-			console.error "Content script error:", response.error
-			return []
-	catch error
-		console.error "Failed to communicate with content script:", error
-		return []
-
-def formatContent pageInfos, pageContent, userConfig
-	console.log pageContent
-	return pageContent.html
-
-def generateOutput pageInfos, outputContent
-	console.log "EXTRACTION!", outputContent
-	const response = await browser.tabs.sendMessage(pageInfos.id, {
-		type: 'EXPORT_CONTENT'
-		outputContent
-	}).catch do(error)
-		console.error "Failed to communicate with content script:", error
