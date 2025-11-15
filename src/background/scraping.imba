@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill'
+import {htmlToMarkdown} from "./html-to-md"
 
 const EXTRACTION_ALLOWED_PAGES =
 	"PhindSearch": "www.phind.com/search"
@@ -45,8 +46,7 @@ export def extractWebpageContent\Promise<{html: string, title: string}> pageInfo
 		return { html: '', title: '' }
 
 export def formatContent pageInfos, pageContent, userConfig
-	console.log pageContent
-	return pageContent.html
+	return htmlToMarkdown pageContent.html
 
 export def generateOutput pageInfos, outputContent
 	console.log "EXTRACTION!", outputContent
