@@ -29,7 +29,7 @@ export def getUserConfig
 	return {}
 
 export def extractWebpageContent pageInfos, pageConfig, userConfig
-	const response = await browser.tabs.sendMessage(pageInfos.id, {
+	const response\Object = await browser.tabs.sendMessage(pageInfos.id, {
 		type: 'EXTRACT_CONTENT'
 		pageConfig
 		pageInfos
@@ -37,7 +37,7 @@ export def extractWebpageContent pageInfos, pageConfig, userConfig
 		console.error "Failed to communicate with content script:", error
 		return { success: false }
 	
-	if response..success then return response.data
+	if response..success then return response..data
 	else do console.error "Content script error:", response..error; return []
 
 export def formatContent pageInfos, pageContent, userConfig
