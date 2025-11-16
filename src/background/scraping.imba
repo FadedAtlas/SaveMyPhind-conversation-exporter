@@ -179,6 +179,29 @@ def formatArticle section, userConfig
 
 def sendToWebhook webhookUrl, content, filename
 	try
+		const formData = new FormData()
+		const blob = new Blob([content], { type: 'text/markdown' })
+		formData.append('file', blob, filename + '.md')
+		
+		const response = await fetch(webhookUrl, {
+			method: 'POST'
+			body: formData
+			# Note: Do not set Content-Type manually
+			# The browser will do it automatically with the correct boundary
+		})
+		
+		if response.ok
+			console.log "File successfully sent to webhook"
+			return { success: true }
+		else
+			console.error "Webhook request failed:", response.status
+			return { success: false, error: "HTTP {response.status}" }
+	catch error
+		console.error "Error sending the file to the webhook:", error
+		return { success: false, error: error.message }
+
+def sendJsonToWebhook webhookUrl, content, filename
+	try
 		const response = await fetch(webhookUrl, {
 			method: 'POST'
 			headers: {
