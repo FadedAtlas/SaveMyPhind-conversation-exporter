@@ -1,10 +1,10 @@
 import browser from 'webextension-polyfill'
 import {launchScraping} from "./scraping"
+import {EXTRACTION_ALLOWED_PAGES} from "./extractionAllowedPages"
 
 export def initBrowserInterface
 	buildContextMenu!
-	# listenIconClick!
-	# listenTabsToUpdateIcon!
+	listenTabsToUpdateIcon!
 
 def buildContextMenu
 	browser.runtime.onInstalled.addListener(do
@@ -59,3 +59,50 @@ def buildContextMenu
 				await launchScraping(tab)
 			when "bugReport"
 				await browser.tabs.create({url: "https://save.hugocollin.com/support"})
+
+def listenTabsToUpdateIcon
+	# Change icon when tab is updated
+	browser.tabs.onUpdated.addListener do(tabId, changeInfo, tab)
+		if changeInfo.status === 'complete'
+			defineIcon(tabId, tab.url)
+	
+	# Change icon when switching tabs
+	browser.tabs.onActivated.addListener do(activeInfo)
+		const tab = await browser.tabs.get(activeInfo.tabId)
+		defineIcon(activeInfo.tabId, tab.url)
+	
+	# Change icon when switching windows
+	browser.windows.onFocusChanged.addListener do(windowId)
+		if windowId !== browser.windows.WINDOW_ID_NONE
+			const tabs = await browser.tabs.query({active: true, windowId: windowId})
+			if tabs[0]
+				defineIcon(tabs[0].id, tabs[0].url)
+
+def defineIcon(tabId, url)
+	return unless url
+	
+	const isExportable = checkIfExportable(url)
+	
+	# Set icon based on page exportability
+	const iconPath = getIconPath(isExportable, url)
+	
+	try
+		await browser.action.setIcon({
+			path: {"48": iconPath}
+			tabId: tabId
+		})
+	catch error
+		console.error "Error setting icon:", error
+
+def checkIfExportable(url)
+	# Check if URL matches any allowed page
+	for own key, pattern of EXTRACTION_ALLOWED_PAGES
+		if url.includes(pattern)
+			return true
+	
+	return false
+
+# Determine icon based on URL
+def getIconPath isExportable, url
+	let basePath = "./assets/icons/"
+	return basePath + (isExportable ? "icon_web-48.png" : "icon_disabled-48.png")

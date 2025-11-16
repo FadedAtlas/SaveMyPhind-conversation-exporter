@@ -26,16 +26,16 @@
   ],
   "{{chrome}}.action": {
     "default_icon": {
-      "16": "assets/icons/icon_web-16.png",
-      "48": "assets/icons/icon_web-48.png",
-      "128": "assets/icons/icon_web-128.png"
+      "16": "assets/icons/icon_disabled-16.png",
+      "48": "assets/icons/icon_disabled-48.png",
+      "128": "assets/icons/icon_disabled-128.png"
     }
   },
   "{{firefox}}.browser_action": {
     "default_icon": {
-      "16": "assets/icons/icon_web-16.png",
-      "48": "assets/icons/icon_web-48.png",
-      "128": "assets/icons/icon_web-128.png"
+      "16": "assets/icons/icon_disabled-16.png",
+      "48": "assets/icons/icon_disabled-48.png",
+      "128": "assets/icons/icon_disabled-128.png"
     }
   },
   "icons": {
