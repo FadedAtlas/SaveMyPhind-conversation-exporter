@@ -1,12 +1,6 @@
 import browser from 'webextension-polyfill'
-import {
-	checkWebpageExtractable
-	getWebpageExtractionConfig
-	getUserConfig
-	extractWebpageContent
-	formatContent
-	generateOutput
-} from "./scraping"
+import {launchScraping} from "./scraping"
+import {initBrowserInterface} from "./initBrowserInterface"
 
 console.log "Background script loaded"
 
@@ -48,30 +42,6 @@ browser.runtime.onInstalled.addListener do(details)
 # On icon click
 browser.action.onClicked.addListener do(currentTabInfos)
 	console.info "Icon clicked"
-	
-	# --- Launch scraping ---
-	# 1. Get webpage infos
-	const extractablePage\(String|false) = checkWebpageExtractable currentTabInfos
-	return if !extractablePage
-	const pageInfos = {
-		extractablePage
-		...currentTabInfos
-	}
-	console.log "HERE!", pageInfos
+	launchScraping currentTabInfos
 
-	# 2. Get webpage extraction config
-	const pageConfig\Object = getWebpageExtractionConfig extractablePage
-	console.log pageConfig
-
-	# 3. Get user extraction config
-	const userConfig\Object = await getUserConfig!
-
-	# 4. Extract webpage content
-	const pageContent\Array<HTMLElement> = await extractWebpageContent pageInfos, pageConfig, userConfig
-	
-	# 5. Format content
-	const outputContent\Object<String:String> = formatContent pageInfos, pageContent, userConfig, pageConfig
-
-	# 6. Generate output
-	generateOutput pageInfos, outputContent, pageContent, userConfig, pageConfig
-
+initBrowserInterface!

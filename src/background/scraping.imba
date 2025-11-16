@@ -3,6 +3,32 @@ import {htmlToMarkdown} from "./html-to-md"
 import {EXTRACTION_CONFIGS} from "./extractionConfigs"
 import {EXTRACTION_ALLOWED_PAGES} from "./extractionAllowedPages"
 
+# --- Launch scraping ---
+export def launchScraping currentTabInfos
+	# 1. Get webpage infos
+	const extractablePage\(String|false) = checkWebpageExtractable currentTabInfos
+	return if !extractablePage
+	const pageInfos = {
+		extractablePage
+		...currentTabInfos
+	}
+	console.log "HERE!", pageInfos
+
+	# 2. Get webpage extraction config
+	const pageConfig\Object = getWebpageExtractionConfig extractablePage
+	console.log pageConfig
+
+	# 3. Get user extraction config
+	const userConfig\Object = await getUserConfig!
+
+	# 4. Extract webpage content
+	const pageContent\Array<HTMLElement> = await extractWebpageContent pageInfos, pageConfig, userConfig
+	
+	# 5. Format content
+	const outputContent\Object<String:String> = formatContent pageInfos, pageContent, userConfig, pageConfig
+
+	# 6. Generate output
+	generateOutput pageInfos, outputContent, pageContent, userConfig, pageConfig
 
 export def checkWebpageExtractable\(String|false) pageInfos
 	const webpageUrl = pageInfos.url.split("https://")[1]

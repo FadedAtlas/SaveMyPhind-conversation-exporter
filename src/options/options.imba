@@ -266,7 +266,7 @@ tag OptionsApp
 			
 			<div.feedback>
 				"Options page is currently in beta. "
-				<a href="https://save.hugocolin.com/discussion" target="_blank"> "Share feedback and report bugs."
+				<a href="https://save.hugocollin.com/discussion" target="_blank"> "Share feedback and report bugs."
 			
 			# Filename Settings Section
 			<div.section>
