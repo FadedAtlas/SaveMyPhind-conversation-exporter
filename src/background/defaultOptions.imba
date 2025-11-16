@@ -1,40 +1,5 @@
 import browser from 'webextension-polyfill'
 
-export def setDefaultOptionsAtInstall
-	browser.runtime.onInstalled.addListener do(details)
-		try
-			# Vérifier si les paramètres existent déjà
-			const currentSettings = await browser.storage.sync.get([
-				'filenameTemplate'
-				'webhookUrl'
-				'outputOptions'
-			])
-			
-			# Créer un objet avec les valeurs par défaut
-			const defaultSettings = {
-				filenameTemplate: currentSettings.filenameTemplate || '%Y-%M-%D_%h-%m-%s_%W_%T'
-				webhookUrl: currentSettings.webhookUrl || ''
-				outputOptions: currentSettings.outputOptions || {
-					localDownload: true
-					webhook: false
-				}
-			}
-			
-			# Sauvegarder les paramètres par défaut
-			await browser.storage.sync.set(defaultSettings)
-			
-			console.log "Default options initialized:", defaultSettings
-			
-			# Afficher un message selon le type d'installation
-			if details.reason === 'install'
-				console.log "Extension installed! Default settings applied."
-			elif details.reason === 'update'
-				const previousVersion = details.previousVersion
-				console.log "Extension updated from version {previousVersion}"
-		
-		catch error
-			console.error "Error setting default options:", error
-
 # Fonction pour réinitialiser les options par défaut
 export def resetToDefaultOptions
 	try
