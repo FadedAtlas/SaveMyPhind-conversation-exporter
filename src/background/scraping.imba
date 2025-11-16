@@ -5,7 +5,7 @@ import {EXTRACTION_CONFIGS} from "./extractionConfigs"
 const EXTRACTION_ALLOWED_PAGES =
 	"PhindSearch": "www.phind.com/search"
 	"Perplexity": "www.perplexity.ai/search"
-	"PerplexityPages": "www.perplexity.ai/page"
+	# "PerplexityPages": "www.perplexity.ai/discover"
 	"MaxAIGoogle": "www.google.com/search"
 	"ChatGPT": "chatgpt.com/c"
 	"ChatGPTShare": "chatgpt.com/share"

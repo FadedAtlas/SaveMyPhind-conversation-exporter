@@ -126,11 +126,11 @@ export const EXTRACTION_CONFIGS = {
 	},
 
 	"Perplexity": {
-		"domainName": "Perplexity.ai",
+		"domainName": "Perplexity",
 		"pageTitle": {
 			"selector": "h1"
 		},
-		"contentSelector": "main .scrollable-container > div > div > div > div > div > div:not([class])",
+		"contentSelector": '[class*="pb-[var(--thread-visual-spacing)]"] > div > .max-w-threadContentWidth, main .scrollable-container > div > div > div > div > div > div:not([class])',
 		"extractionType": "search-sections",
 		"sectionConfig": {
 			"userQuestionSelector": ".break-words",
@@ -221,14 +221,5 @@ export const EXTRACTION_CONFIGS = {
 				}
 			]
 		}
-	},
-
-	"MaxAIGoogle": {
-		"domainName": "MaxAI Google",
-		"pageTitle": {
-			"selector": "title"
-		},
-		"contentSelector": "body",
-		"extractionType": "full-page"
 	}
 }
