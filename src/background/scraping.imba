@@ -14,25 +14,34 @@ const EXTRACTION_ALLOWED_PAGES =
 	"ClaudeChat": "claude.ai/chat"
 	"ClaudeShare": "claude.ai/share"
 
-
 export def checkWebpageExtractable\(String|false) pageInfos
 	const webpageUrl = pageInfos.url.split("https://")[1]
-
 	for own pageName, pageUrl of EXTRACTION_ALLOWED_PAGES
 		if webpageUrl.startsWith pageUrl
 			return pageName
 	return false
 
-
 export def getWebpageExtractionConfig\{} pageConfigName
 	return EXTRACTION_CONFIGS[pageConfigName] || {}
 
-export def getUserConfig\{}
-	# Peut être étendu pour récupérer les préférences utilisateur depuis le storage
+export def getUserConfig
+	# Récupère les préférences utilisateur depuis le storage
+	const result = await browser.storage.sync.get([
+		'filenameTemplate'
+		'webhookUrl'
+		'outputOptions'
+	])
+	
 	return {
 		includePageTitle: true
 		includeSources: true
 		formatMarkdown: true
+		filenameTemplate: result..filenameTemplate || '%Y-%M-%D_%h-%m-%s_%W_%T'
+		webhookUrl: result..webhookUrl || ''
+		outputOptions: result..outputOptions || {
+			localDownload: true
+			webhook: false
+		}
 	}
 
 export def extractWebpageContent\Promise<{html: string, title: string, sections: Array}> pageInfos, pageConfig, userConfig
@@ -51,6 +60,37 @@ export def extractWebpageContent\Promise<{html: string, title: string, sections:
 	else 
 		console.error "Content script error:", response..error
 		return { html: '', title: '', sections: [] }
+
+def formatFilename pageInfos, pageContent, userConfig, pageConfig
+	console.log userConfig
+	let template = userConfig..filenameTemplate || '%Y-%M-%D_%h-%m-%s_%W_%T'
+	const now = new Date()
+	
+	# Extraire le titre de la page (premiers 60 caractères)
+	const pageTitle = pageContent.title || 'export'
+	const truncatedTitle = pageTitle.slice(0, 60).replace(/[^a-zA-Z0-9]/g, '_')
+	
+	# Extraire le nom du domaine
+	const domainName = pageConfig..domainName || pageInfos.url.split('/')[2]
+	
+	# Remplacer les placeholders
+	const replacements = {
+		'%W': domainName.replace(/[^a-zA-Z0-9]/g, '_')
+		'%H': pageInfos.url.split('/')[2]
+		'%T': truncatedTitle
+		'%t': now.getTime().toString()
+		'%Y': now.getFullYear().toString()
+		'%M': (now.getMonth() + 1).toString().padStart(2, '0')
+		'%D': now.getDate().toString().padStart(2, '0')
+		'%h': now.getHours().toString().padStart(2, '0')
+		'%m': now.getMinutes().toString().padStart(2, '0')
+		'%s': now.getSeconds().toString().padStart(2, '0')
+	}
+	
+	for own placeholder, value of replacements
+		template = template.replace(new RegExp(placeholder, 'g'), value)
+	
+	return template
 
 export def formatContent pageInfos, pageContent, userConfig, pageConfig
 	let output = ""
@@ -137,16 +177,57 @@ def formatArticle section, userConfig
 	
 	return output
 
-export def generateOutput pageInfos, outputContent
+def sendToWebhook webhookUrl, content, filename
+	try
+		const response = await fetch(webhookUrl, {
+			method: 'POST'
+			headers: {
+				'Content-Type': 'application/json'
+			}
+			body: JSON.stringify({
+				filename: filename
+				content: content
+				timestamp: new Date().toISOString()
+			})
+		})
+		
+		if response.ok
+			console.log "Content sent to webhook successfully"
+			return { success: true }
+		else
+			console.error "Webhook request failed:", response.status
+			return { success: false, error: "HTTP {response.status}" }
+	catch error
+		console.error "Failed to send to webhook:", error
+		return { success: false, error: error.message }
+
+export def generateOutput pageInfos, outputContent, pageContent, userConfig, pageConfig
 	console.log "EXTRACTION!", outputContent
+	console.log userConfig, userConfig
 	
-	# Générer un nom de fichier basé sur le titre de la page
-	const pageTitle = outputContent.split('\n')[0].replace(/^# /, '').trim()
-	const filename = pageTitle || 'export'
+	# Générer un nom de fichier basé sur le template
+	const filename = formatFilename(pageInfos, pageContent, userConfig, pageConfig)
 	
-	const response = await browser.tabs.sendMessage(pageInfos.id, {
-		type: 'EXPORT_CONTENT'
-		outputContent
-		filename
-	}).catch do(error)
-		console.error "Failed to communicate with content script:", error
+	# Gérer les sorties selon les options
+	const results = {
+		localDownload: null
+		webhook: null
+	}
+	console.log "userConf", userConfig
+	# Local download
+	if userConfig.outputOptions.localDownload
+		const response = await browser.tabs.sendMessage(pageInfos.id, {
+			type: 'EXPORT_CONTENT'
+			outputContent
+			filename
+		}).catch do(error)
+			console.error "Failed to communicate with content script:", error
+			return { success: false, error: error.message }
+		
+		results.localDownload = response
+	
+	# Webhook
+	if userConfig.outputOptions.webhook and userConfig.webhookUrl
+		results.webhook = await sendToWebhook(userConfig.webhookUrl, outputContent, filename)
+	
+	return results

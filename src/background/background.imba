@@ -39,7 +39,7 @@ browser.action.onClicked.addListener do(currentTabInfos)
 	console.log pageConfig
 
 	# 3. Get user extraction config
-	const userConfig\Object = getUserConfig!
+	const userConfig\Object = await getUserConfig!
 
 	# 4. Extract webpage content
 	const pageContent\Array<HTMLElement> = await extractWebpageContent pageInfos, pageConfig, userConfig
@@ -48,5 +48,5 @@ browser.action.onClicked.addListener do(currentTabInfos)
 	const outputContent\Object<String:String> = formatContent pageInfos, pageContent, userConfig, pageConfig
 
 	# 6. Generate output
-	generateOutput pageInfos, outputContent
+	generateOutput pageInfos, outputContent, pageContent, userConfig, pageConfig
 
