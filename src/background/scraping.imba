@@ -1,18 +1,8 @@
 import browser from 'webextension-polyfill'
 import {htmlToMarkdown} from "./html-to-md"
 import {EXTRACTION_CONFIGS} from "./extractionConfigs"
+import {EXTRACTION_ALLOWED_PAGES} from "./extractionAllowedPages"
 
-const EXTRACTION_ALLOWED_PAGES =
-	"PhindSearch": "www.phind.com/search"
-	"Perplexity": "www.perplexity.ai/search"
-	# "PerplexityPages": "www.perplexity.ai/discover"
-	"MaxAIGoogle": "www.google.com/search"
-	"ChatGPT": "chatgpt.com/c"
-	"ChatGPTShare": "chatgpt.com/share"
-	"ChatGPTBots": "chatgpt.com/g"
-	"ChatGPTSignedOut": "chatgpt.com"
-	"ClaudeChat": "claude.ai/chat"
-	"ClaudeShare": "claude.ai/share"
 
 export def checkWebpageExtractable\(String|false) pageInfos
 	const webpageUrl = pageInfos.url.split("https://")[1]
