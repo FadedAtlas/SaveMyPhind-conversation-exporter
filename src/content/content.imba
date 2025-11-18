@@ -60,7 +60,7 @@ def extractMessageList config
 
 def extractMessage element, config
 	const messageConfig = config..messageConfig
-	console.log "CONFIG", config
+	# console.log "CONFIG", config
 	try
 		let role = null
 		let content = null
@@ -249,7 +249,7 @@ def legacyDownload text\String, filename\String="Export"
 
 # Listen messages
 browser.runtime.onMessage.addListener do(message, sender, sendResponse)
-	console.log "Content script received message:", message
+	# console.log "Content script received message:", message
 	
 	# Respond to PING to verify that the script is loaded
 	if message.type === 'PING'
