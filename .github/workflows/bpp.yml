@@ -1,0 +1,50 @@
+name: Launch Release
+
+on:
+  push:
+    branches:
+      - bpp
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # --- SETUP ---
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Get package info
+        id: package_info
+        run: |
+          echo "version=$(bun run -e 'console.log(require("./package.json").version)')" >> $GITHUB_OUTPUT
+          echo "name=$(bun run -e 'console.log(require("./package.json").name)')" >> $GITHUB_OUTPUT
+
+      # --- SOURCE ZIP ---
+      - name: Prepare source code zip
+        uses: vimtor/action-zip@v1.2
+        with:
+          files: ./
+          dest: releases/${{ steps.package_info.outputs.name }}_${{ steps.package_info.outputs.version }}_source.zip
+
+      # --- BUILD ---
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build extension
+        run: bun run prod
+
+      # --- PUBLISH ---
+      - name: Browser Platform Publish
+        uses: PlasmoHQ/bpp@v3.7.0
+        with:
+          keys: ${{ secrets.BPP_KEYS }}
+          chrome-file: releases/${{ steps.package_info.outputs.name }}_${{ steps.package_info.outputs.version }}_chrome.zip
+          firefox-file: releases/${{ steps.package_info.outputs.name }}_${{ steps.package_info.outputs.version }}_firefox.zip
+          edge-file: releases/${{ steps.package_info.outputs.name }}_${{ steps.package_info.outputs.name }}_${{ steps.package_info.outputs.version }}_chrome.zip
+          source: releases/${{ steps.package_info.outputs.name }}_${{ steps.package_info.outputs.version }}_source.zip
+          notes: "1. Go to a compatible chatbot website, then start a new chat.\n2. Click on the extension icon to download a formatted markdown file containing the conversation."
