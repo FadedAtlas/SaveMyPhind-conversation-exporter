@@ -194,7 +194,8 @@ def performExtraction pageConfig, userConfig
 	try
 		# Extract title
 		const titleElement = extractBySelector(pageConfig.pageTitle.selector)
-		const title = if titleElement then getElementText(titleElement) else document.title
+		# console.log titleElement
+		const title = if titleElement and titleElement !== null then getElementText(titleElement) else document.title
 		
 		# Extract content following the type
 		let sections = []

@@ -84,7 +84,7 @@ export const EXTRACTION_CONFIGS = {
 	"ClaudeChat": {
 		"domainName": "Claude Chat",
 		"pageTitle": {
-			"selector": "[data-testid=\"chat-menu-trigger\"], .tracking-tight.truncate"
+			"selector": "[data-testid=\"chat-title-button\"], .tracking-tight.truncate"
 		},
 		"contentSelector": "[data-test-render-count]",
 		"extractionType": "message-list",
@@ -109,7 +109,7 @@ export const EXTRACTION_CONFIGS = {
 	"ClaudeShare": {
 		"domainName": "Claude Chat",
 		"pageTitle": {
-			"selector": "h1, .tracking-tight.truncate"
+			"selector": ".tracking-tight.truncate"
 		},
 		"contentSelector": "[data-test-render-count]",
 		"extractionType": "message-list",
