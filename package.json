@@ -1,6 +1,10 @@
 {
   "name": "Save my Chatbot",
-  "version": "3.0.0",
+  "version": "4.0.0",
+  "description": "🚀 Download your ChatGPT, Claude, Perplexity and Phind discussions into markdown files!",
+  "author": "Hugo COLLIN",
+  "license": "RMD-C 1.1",
+  "homepage": "https://save.hugocollin.com",
   "type": "module",
   "scripts": {
     "dev": "bun scripts/bundle/build.js --watch --mode=development",

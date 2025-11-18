@@ -10,8 +10,7 @@
   "host_permissions": [
     "*://*.phind.com/*",
     "*://*.perplexity.ai/*",
-    "*://google.com/search*",
-    "*://chatgpt.com/*",
+    "*://*.chatgpt.com/*",
     "*://*.claude.ai/*"
   ],
   "background": {
@@ -48,7 +47,7 @@
   },
   "{{firefox}}.browser_specific_settings": {
       "gecko": {
-        "id": "myextension@example.com",
+        "id": "savemyphind@hugocollin.com",
         "strict_min_version": "109.0"
       }
     }
