@@ -61,6 +61,12 @@ export def getUserConfig
 	}
 
 export def extractWebpageContent\Promise<{html: string, title: string, sections: Array}> pageInfos, pageConfig, userConfig
+	# S'assurer que le content script est chargé
+	const isLoaded = await ensureContentScriptLoaded(pageInfos.id)
+	if !isLoaded
+		console.error "Cannot load content script"
+		return { html: '', title: '', sections: [] }
+	
 	const response\(
 		{ success: boolean, data: { html: string, title: string, sections: Array }} | { success: boolean } | any
 	) = await browser.tabs.sendMessage(pageInfos.id, {
@@ -247,6 +253,9 @@ export def generateOutput pageInfos, outputContent, pageContent, userConfig, pag
 	# Générer un nom de fichier basé sur le template
 	const filename = formatFilename(pageInfos, pageContent, userConfig, pageConfig)
 	
+	# S'assurer que le content script est chargé avant l'export
+	await ensureContentScriptLoaded(pageInfos.id)
+	
 	# Gérer les sorties selon les options
 	const results = {
 		localDownload: null
@@ -270,3 +279,28 @@ export def generateOutput pageInfos, outputContent, pageContent, userConfig, pag
 		results.webhook = await sendToWebhook(userConfig.webhookUrl, outputContent, filename)
 	
 	return results
+
+# Vérifie si le content script est chargé et l'injecte si nécessaire
+def ensureContentScriptLoaded tabId
+	try
+		# Essayer de ping le content script
+		await browser.tabs.sendMessage(tabId, { type: 'PING' })
+		return true
+	catch error
+		console.log "Content script not loaded, injecting..."
+		
+		try
+			# Injecter le content script manuellement
+			await browser.scripting.executeScript({
+				target: { tabId: tabId }
+				files: ['content.js']
+			})
+			
+			# Attendre un peu que le script s'initialise
+			await new Promise(do(resolve) setTimeout(resolve, 100))
+			
+			console.log "Content script injected successfully"
+			return true
+		catch injectError
+			console.error "Failed to inject content script:", injectError
+			return false

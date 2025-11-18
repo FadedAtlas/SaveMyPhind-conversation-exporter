@@ -237,6 +237,11 @@ def legacyDownload text\String, filename\String="Export"
 browser.runtime.onMessage.addListener do(message, sender, sendResponse)
 	console.log "Content script received message:", message
 	
+	# Répondre au PING pour vérifier que le script est chargé
+	if message.type === 'PING'
+		sendResponse({ success: true, loaded: true })
+		return true
+	
 	if message.type === 'EXTRACT_CONTENT'
 		try
 			const result = performExtraction(message.pageConfig, message.userConfig)
