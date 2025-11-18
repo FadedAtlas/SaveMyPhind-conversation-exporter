@@ -16,13 +16,14 @@ export def launchScraping currentTabInfos
 
 	# 2. Get webpage extraction config
 	const pageConfig\Object = getWebpageExtractionConfig extractablePage
-	console.log pageConfig
+	# console.log pageConfig
 
 	# 3. Get user extraction config
 	const userConfig\Object = await getUserConfig!
 
 	# 4. Extract webpage content
 	const pageContent\Array<HTMLElement> = await extractWebpageContent pageInfos, pageConfig, userConfig
+	# console.log pageContent
 	
 	# 5. Format content
 	const outputContent\Object<String:String> = formatContent pageInfos, pageContent, userConfig, pageConfig
@@ -84,7 +85,7 @@ export def extractWebpageContent\Promise<{html: string, title: string, sections:
 		return { html: '', title: '', sections: [] }
 
 def formatFilename pageInfos, pageContent, userConfig, pageConfig
-	console.log userConfig
+	# console.log userConfig
 	let template = userConfig..filenameTemplate || '%Y-%M-%D_%h-%m-%s_%W_%T'
 	const now = new Date()
 	
@@ -169,11 +170,11 @@ def formatSearchQA section, userConfig
 	let output = ""
 	
 	if section.question
-		output += "## Question\n\n"
+		output += "## Message\n\n"
 		output += htmlToMarkdown(section.question) + "\n\n"
 	
-	if section.model
-		output += `*Model: {section.model}*\n\n`
+	# if section.model
+	# 	output += `*Model: {section.model}*\n\n`
 	
 	if section.answer
 		output += "## Answer\n\n"
@@ -247,8 +248,8 @@ def sendJsonToWebhook webhookUrl, content, filename
 		return { success: false, error: error.message }
 
 export def generateOutput pageInfos, outputContent, pageContent, userConfig, pageConfig
-	console.log "EXTRACTION!", outputContent
-	console.log userConfig, userConfig
+	# console.log "EXTRACTION!", outputContent
+	# console.log userConfig, userConfig
 	
 	# Générer un nom de fichier basé sur le template
 	const filename = formatFilename(pageInfos, pageContent, userConfig, pageConfig)
@@ -261,7 +262,7 @@ export def generateOutput pageInfos, outputContent, pageContent, userConfig, pag
 		localDownload: null
 		webhook: null
 	}
-	console.log "userConf", userConfig
+	# console.log "userConf", userConfig
 	# Local download
 	if userConfig.outputOptions.localDownload
 		const response = await browser.tabs.sendMessage(pageInfos.id, {

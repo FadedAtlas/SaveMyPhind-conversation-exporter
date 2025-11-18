@@ -52,13 +52,15 @@ def extractMessageList config
 	const sections = []
 	
 	for contentElement in contentElements
-		const section = extractMessage(contentElement, config.messageConfig)
+		const section = extractMessage(contentElement, config)
 		if section
 			sections.push(section)
 	
 	return sections
 
-def extractMessage element, messageConfig
+def extractMessage element, config
+	const messageConfig = config..messageConfig
+	console.log "CONFIG", config
 	try
 		let role = null
 		let content = null
@@ -108,6 +110,7 @@ def extractMessage element, messageConfig
 	catch error
 		console.error "Error extracting message:", error
 		return null
+
 
 def extractSearchSections config
 	const contentElements = extractAllBySelector(config.contentSelector)
