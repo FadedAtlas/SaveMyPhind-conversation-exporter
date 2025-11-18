@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill'
 import {htmlToMarkdown} from "./html-to-md"
-import {EXTRACTION_CONFIGS} from "./extractionConfigs"
-import {EXTRACTION_ALLOWED_PAGES} from "./extractionAllowedPages"
+import {EXTRACTION_CONFIGS} from "./data/extractionConfigs"
+import {EXTRACTION_ALLOWED_PAGES} from "./data/extractionAllowedPages.imba"
 
 # --- Launch scraping ---
 export def launchScraping currentTabInfos
@@ -12,7 +12,7 @@ export def launchScraping currentTabInfos
 		extractablePage
 		...currentTabInfos
 	}
-	console.log "HERE!", pageInfos
+	# console.log "HERE!", pageInfos
 
 	# 2. Get webpage extraction config
 	const pageConfig\Object = getWebpageExtractionConfig extractablePage

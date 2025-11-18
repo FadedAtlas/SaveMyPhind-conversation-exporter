@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill'
 import {launchScraping} from "./scraping"
-import {EXTRACTION_ALLOWED_PAGES} from "./extractionAllowedPages"
+import {EXTRACTION_ALLOWED_PAGES} from "./data/extractionAllowedPages.imba"
 
 export def initBrowserInterface
 	buildContextMenu!
