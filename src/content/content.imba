@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill'
 
 console.log "Content script loaded"
 
-# Utilitaires d'extraction
+# Extraction utilities
 def getElementText element
 	return element..textContent..trim() || ""
 
@@ -46,7 +46,7 @@ def extractAllBySelector selector, scope = 'document'
 	
 	return Array.from(root.querySelectorAll(selector))
 
-# Extracteurs par type de page
+# Extractors by page type
 def extractMessageList config
 	const contentElements = extractAllBySelector(config.contentSelector)
 	const sections = []
@@ -65,9 +65,9 @@ def extractMessage element, config
 		let role = null
 		let content = null
 		
-		# Déterminer le rôle
+		# Determine rôle
 		if messageConfig.roleAttribute
-			# Pour ChatGPT et Phind (avec data-message-author-role)
+			# For ChatGPT and Phind (with data-message-author-role)
 			const roleElement = element.querySelector(messageConfig.roleSelector)
 			const roleAttr = roleElement..getAttribute(messageConfig.roleAttribute)
 			role = messageConfig.roles[roleAttr] || roleAttr || "Message"
@@ -76,13 +76,13 @@ def extractMessage element, config
 		elif messageConfig.userSelector and element.matches(messageConfig.userSelector)
 			role = messageConfig.roles.user
 		elif messageConfig.userSelector and messageConfig.assistantSelector
-			# Pour Claude (avec userSelector et assistantSelector)
-			# Vérifier si l'élément matche directement les sélecteurs ou contient ces éléments
+			# For Claude and Perplexity (with userSelector and assistantSelector)
+			# Check if the element directly matches the selectors or contains these elements
 			if element.matches(messageConfig.userSelector) or element.querySelector(messageConfig.userSelector)
 				role = messageConfig.roles.user
 			elif element.matches(messageConfig.assistantSelector) or element.querySelector(messageConfig.assistantSelector)
 				role = messageConfig.roles.assistant
-			# Fallback: vérifier streamingIndicator pour l'assistant
+			# Fallback: check streamingIndicator for the assistant
 			elif messageConfig.streamingIndicator and element.closest(messageConfig.streamingIndicator)
 				role = messageConfig.roles.assistant
 			else
@@ -90,11 +90,11 @@ def extractMessage element, config
 		else
 			role = "Message"
 		
-		# Extraire le contenu
+		# Extract content
 		const contentElement = element.querySelector(messageConfig.contentSelector) || element
 		content = getElementHTML(contentElement)
 		
-		# Extraire les inputs si présents (pour Claude)
+		# Extract the inputs if available (for Claude)
 		let inputs = []
 		if messageConfig.inputsSelector
 			const inputElements = element.querySelectorAll(messageConfig.inputsSelector)
@@ -189,14 +189,14 @@ def extractSources contentElement, sourcesConfig
 	
 	return sources
 
-# Fonction principale d'extraction
+# Main extraction function
 def performExtraction pageConfig, userConfig
 	try
-		# Extraire le titre
+		# Extract title
 		const titleElement = extractBySelector(pageConfig.pageTitle.selector)
 		const title = if titleElement then getElementText(titleElement) else document.title
 		
-		# Extraire le contenu selon le type
+		# Extract content following the type
 		let sections = []
 		
 		if pageConfig.extractionType === 'message-list'
@@ -208,12 +208,12 @@ def performExtraction pageConfig, userConfig
 		elif pageConfig.extractionType === 'full-page'
 			sections = extractFullPage(pageConfig)
 		else
-			# Fallback: extraire tout le contenu
+			# Fallback: extract all the content
 			const contentElements = extractAllBySelector(pageConfig.contentSelector)
 			sections = contentElements.map do(el)
 				return { type: 'generic', html: getElementHTML(el) }
 		
-		# Extraire les sources si configuré
+		# Extract the sources if configured
 		if userConfig.includeSources and pageConfig.sourcesExtraction
 			for section in sections
 				const contentElement = document.querySelector(pageConfig.contentSelector)
@@ -235,7 +235,7 @@ def performExtraction pageConfig, userConfig
 			error: error.message
 		}
 
-# Fonction de téléchargement
+# Download function
 def legacyDownload text\String, filename\String="Export"
 	const blob = new Blob([text], { type: 'text/markdown' })
 	const url = URL.createObjectURL(blob)
@@ -247,11 +247,11 @@ def legacyDownload text\String, filename\String="Export"
 	document.body.removeChild(a)
 	URL.revokeObjectURL(url)
 
-# Écoute des messages
+# Listen messages
 browser.runtime.onMessage.addListener do(message, sender, sendResponse)
 	console.log "Content script received message:", message
 	
-	# Répondre au PING pour vérifier que le script est chargé
+	# Respond to PING to verify that the script is loaded
 	if message.type === 'PING'
 		sendResponse({ success: true, loaded: true })
 		return true

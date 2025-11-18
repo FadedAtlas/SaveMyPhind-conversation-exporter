@@ -42,7 +42,7 @@ export def getWebpageExtractionConfig\{} pageConfigName
 	return EXTRACTION_CONFIGS[pageConfigName] || {}
 
 export def getUserConfig
-	# Récupère les préférences utilisateur depuis le storage
+	# Get user preferences from storage
 	const result = await browser.storage.sync.get([
 		'filenameTemplate'
 		'webhookUrl'
@@ -62,7 +62,7 @@ export def getUserConfig
 	}
 
 export def extractWebpageContent\Promise<{html: string, title: string, sections: Array}> pageInfos, pageConfig, userConfig
-	# S'assurer que le content script est chargé
+	# Ensure the content-script is loaded
 	const isLoaded = await ensureContentScriptLoaded(pageInfos.id)
 	if !isLoaded
 		console.error "Cannot load content script"
@@ -89,14 +89,14 @@ def formatFilename pageInfos, pageContent, userConfig, pageConfig
 	let template = userConfig..filenameTemplate || '%Y-%M-%D_%h-%m-%s_%W_%T'
 	const now = new Date()
 	
-	# Extraire le titre de la page (premiers 60 caractères)
+	# Extract the page title (first 60 characters)
 	const pageTitle = pageContent.title || 'export'
 	const truncatedTitle = pageTitle.slice(0, 60).replace(/[^a-zA-Z0-9]/g, '_')
 	
-	# Extraire le nom du domaine
+	# Extract domain name
 	const domainName = pageConfig..domainName || pageInfos.url.split('/')[2]
 	
-	# Remplacer les placeholders
+	# Replace placeholders
 	const replacements = {
 		'%W': domainName.replace(/[^a-zA-Z0-9]/g, '_')
 		'%H': pageInfos.url.split('/')[2]
@@ -129,21 +129,21 @@ def cleanTitle title, maxLength = 100
 export def formatContent pageInfos, pageContent, userConfig, pageConfig
 	let output = ""
 	
-	# Ajouter le titre de la page (nettoyé et limité)
+	# Add the page title (cleaned and limited)
 	if userConfig.includePageTitle and pageContent.title
 		const cleanedTitle = cleanTitle(pageContent.title, 100)
 		output += "# " + cleanedTitle + "\n\n"
 	
-	# Ajouter les métadonnées
+	# Add metadata
 	const source = if pageConfig..domainName then "[{pageConfig..domainName}]({pageInfos.url})" else "{pageInfos.url}"
 	output += `Source: {source}\n`
 	output += `Extracted: {new Date().toISOString()}\n`
 	output += `🚀 Exported with [Save my Chatbot](https://save.hugocolin.com)!\n`
 	output += "\n---\n\n"
 	
-	# Formatter le contenu selon le type d'extraction
+	# Format the content according to the type of extraction
 	if pageContent.sections and pageContent.sections.length > 0
-		# Contenu structuré par sections
+		# Content structured by sections
 		for section in pageContent.sections
 			if section.type === 'message'
 				output += formatMessage(section, userConfig)
@@ -152,10 +152,10 @@ export def formatContent pageInfos, pageContent, userConfig, pageConfig
 			elif section.type === 'article'
 				output += formatArticle(section, userConfig)
 			else
-				# Contenu générique
+				# Generic content
 				output += htmlToMarkdown(section.html) + "\n\n"
 	else
-		# Fallback: tout le HTML
+		# Fallback: all the HTML
 		output += htmlToMarkdown(pageContent.html)
 	
 	return output
@@ -263,13 +263,13 @@ export def generateOutput pageInfos, outputContent, pageContent, userConfig, pag
 	# console.log "EXTRACTION!", outputContent
 	# console.log userConfig, userConfig
 	
-	# Générer un nom de fichier basé sur le template
+	# Generate a filename based on the template
 	const filename = formatFilename(pageInfos, pageContent, userConfig, pageConfig)
 	
-	# S'assurer que le content script est chargé avant l'export
+	# Ensure that the content script is loaded before export
 	await ensureContentScriptLoaded(pageInfos.id)
 	
-	# Gérer les sorties selon les options
+	# Manage the outputs according to the options
 	const results = {
 		localDownload: null
 		webhook: null
@@ -293,23 +293,23 @@ export def generateOutput pageInfos, outputContent, pageContent, userConfig, pag
 	
 	return results
 
-# Vérifie si le content script est chargé et l'injecte si nécessaire
+# Checks if the content script is loaded and injects it if necessary
 def ensureContentScriptLoaded tabId
 	try
-		# Essayer de ping le content script
+		# Try to ping the content script
 		await browser.tabs.sendMessage(tabId, { type: 'PING' })
 		return true
 	catch error
 		console.log "Content script not loaded, injecting..."
 		
 		try
-			# Injecter le content script manuellement
+			# Inject the content script manually
 			await browser.scripting.executeScript({
 				target: { tabId: tabId }
 				files: ['content.js']
 			})
 			
-			# Attendre un peu que le script s'initialise
+			# Wait a little while for the script to initialize
 			await new Promise(do(resolve) setTimeout(resolve, 100))
 			
 			console.log "Content script injected successfully"

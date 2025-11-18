@@ -43,7 +43,7 @@ tag OptionsApp
 			console.log "Settings saved successfully"
 			console.log outputOptions
 			
-			# Notification au background script
+			# Notification to background script
 			try
 				const response = await browser.runtime.sendMessage({ 
 					type: "SETTINGS_UPDATED"
