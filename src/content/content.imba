@@ -65,6 +65,7 @@ def extractMessage element, messageConfig
 		
 		# Déterminer le rôle
 		if messageConfig.roleAttribute
+			# Pour ChatGPT et Phind (avec data-message-author-role)
 			const roleElement = element.querySelector(messageConfig.roleSelector)
 			const roleAttr = roleElement..getAttribute(messageConfig.roleAttribute)
 			role = messageConfig.roles[roleAttr] || roleAttr || "Message"
@@ -72,8 +73,18 @@ def extractMessage element, messageConfig
 			role = messageConfig.roles.assistant
 		elif messageConfig.userSelector and element.matches(messageConfig.userSelector)
 			role = messageConfig.roles.user
-		elif messageConfig.assistantSelector and element.matches(messageConfig.assistantSelector)
-			role = messageConfig.roles.assistant
+		elif messageConfig.userSelector and messageConfig.assistantSelector
+			# Pour Claude (avec userSelector et assistantSelector)
+			# Vérifier si l'élément matche directement les sélecteurs ou contient ces éléments
+			if element.matches(messageConfig.userSelector) or element.querySelector(messageConfig.userSelector)
+				role = messageConfig.roles.user
+			elif element.matches(messageConfig.assistantSelector) or element.querySelector(messageConfig.assistantSelector)
+				role = messageConfig.roles.assistant
+			# Fallback: vérifier streamingIndicator pour l'assistant
+			elif messageConfig.streamingIndicator and element.closest(messageConfig.streamingIndicator)
+				role = messageConfig.roles.assistant
+			else
+				role = "Message"
 		else
 			role = "Message"
 		
