@@ -1,0 +1,7 @@
+1. Unzip the sources
+2. Open the extracted folder in a terminal
+3. Run the command:
+bun install
+4. Run the command:
+bun run build:firefox
+5. Go to the dist folder, it contains the final code
