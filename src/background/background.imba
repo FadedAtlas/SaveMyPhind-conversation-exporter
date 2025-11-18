@@ -2,6 +2,8 @@ import browser from 'webextension-polyfill'
 import {launchScraping} from "./scraping"
 import {initBrowserInterface} from "./initBrowserInterface"
 
+const actionAPI = browser.action || browser.browserAction; # Firefox compatibility
+
 console.log "Background script loaded"
 
 # Manage installation
@@ -40,7 +42,7 @@ browser.runtime.onInstalled.addListener do(details)
 		console.error "Error setting default options:", error
 
 # On icon click
-browser.action.onClicked.addListener do(currentTabInfos)
+actionAPI.onClicked.addListener do(currentTabInfos)
 	console.info "Icon clicked"
 	launchScraping currentTabInfos
 

@@ -2,6 +2,9 @@ import browser from 'webextension-polyfill'
 import {launchScraping} from "./scraping"
 import {EXTRACTION_ALLOWED_PAGES} from "./data/extractionAllowedPages.imba"
 
+const actionAPI = browser.action || browser.browserAction; 				# Firefox compatibility
+const ACTION_CONTEXT = browser.action ? "action" : "browser_action";	# Firefox compatibility
+
 export def initBrowserInterface
 	buildContextMenu!
 	listenTabsToUpdateIcon!
@@ -11,32 +14,32 @@ def buildContextMenu
 		browser.contextMenus.create({
 			id: "openOptions",
 			title: "⚙️ Export Options",
-			contexts: ["action"]
+			contexts: [ACTION_CONTEXT]
 		})
 		browser.contextMenus.create({
 			id: "tutorial",
 			title: "❓ User's Guide",
-			contexts: ["action"]
+			contexts: [ACTION_CONTEXT]
 		})
 		browser.contextMenus.create({
 			id: "separator",
 			type: "separator",
-			contexts: ["action"]
+			contexts: [ACTION_CONTEXT]
 		})
 		browser.contextMenus.create({
 			id: "feedback",
 			title: "🤩 Share your feedback on the store",
-			contexts: ["action"]
+			contexts: [ACTION_CONTEXT]
 		})
 		browser.contextMenus.create({
 			id: "bugReport",
 			title: "🚀 Report a bug or suggest a feature",
-			contexts: ["action"]
+			contexts: [ACTION_CONTEXT]
 		})
 		browser.contextMenus.create({
 			id: "donation",
 			title: "❤️ Support the project",
-			contexts: ["action"]
+			contexts: [ACTION_CONTEXT]
 		})
 		browser.contextMenus.create({
 			id: "exportPage",
@@ -87,7 +90,7 @@ def defineIcon(tabId, url)
 	const iconPath = getIconPath(isExportable, url)
 	
 	try
-		await browser.action.setIcon({
+		await actionAPI.setIcon({
 			path: {"48": iconPath}
 			tabId: tabId
 		})
