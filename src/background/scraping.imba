@@ -115,12 +115,24 @@ def formatFilename pageInfos, pageContent, userConfig, pageConfig
 	
 	return template
 
+# Helper function to clean and truncate title
+def cleanTitle title, maxLength = 100
+	# Remove line breaks and extra whitespace
+	let cleaned = title.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
+	
+	# Truncate if too long
+	if cleaned.length > maxLength
+		cleaned = cleaned.slice(0, maxLength) + '...'
+	
+	return cleaned
+
 export def formatContent pageInfos, pageContent, userConfig, pageConfig
 	let output = ""
 	
-	# Ajouter le titre de la page
+	# Ajouter le titre de la page (nettoyé et limité)
 	if userConfig.includePageTitle and pageContent.title
-		output += "# " + pageContent.title + "\n\n"
+		const cleanedTitle = cleanTitle(pageContent.title, 100)
+		output += "# " + cleanedTitle + "\n\n"
 	
 	# Ajouter les métadonnées
 	const source = if pageConfig..domainName then "[{pageConfig..domainName}]({pageInfos.url})" else "{pageInfos.url}"
