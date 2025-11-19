@@ -6,7 +6,7 @@
   <img src="./docs/captures/Gif_SmC_SearchExport.gif" alt="Save my Chatbot demonstration gif" style="width:500px">
 </div>
 
-## 🗺️ Welcome, new exporters!
+## 🗺️ Welcome, new exporter!
 
 <h3>
   <a href="https://save.hugocollin.com/get">⏩ Click here to install Save my Chatbot ⏪</a>
@@ -16,7 +16,7 @@
 
 ### ❓ How to use? Simple as 1-2!
 
-1. **Go to a chat page**: Claude, Perplexity, Phind, ChatGPT or Google (with MaxAI integration).
+1. **Go to a chat page**: ChatGPT, Claude, Perplexity or Phind.
 2. **Click on the extension icon.**
 
 👉 It will **automatically download a structured markdown file** containing the conversation. You can **optionally configure some export settings** in the Options page.
@@ -33,8 +33,8 @@
 - [x] Clean markdown formatting and structuring
 <!-- - [x] Keep numbered sources in the exported file -->
 <!-- - [x] Keep Artifacts content (Claude) -->
-- [x] Configure your exports (filename, output...)
 - [x] Informative file header and filename (date, url...)
+- [x] Configure your exports (filename, output...)
 <!-- - [x] Indicates the chatbot response mode used (Phind-Search and Perplexity) -->
 <!-- - [x] Informative modals (updates...) -->
 
