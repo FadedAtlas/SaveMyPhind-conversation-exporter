@@ -91,16 +91,24 @@ def formatFilename pageInfos, pageContent, userConfig, pageConfig
 	
 	# Extract the page title (first 60 characters)
 	const pageTitle = pageContent.title || 'export'
-	const truncatedTitle = pageTitle.slice(0, 60).replace(/[^a-zA-Z0-9]/g, '_')
+	
+	# Clean title: keep letters (including accented), numbers, spaces, hyphens and underscores
+	# Then replace remaining invalid filename chars and normalize spaces
+	let cleanedTitle = pageTitle.slice(0, 60)
+	cleanedTitle = cleanedTitle.replace(/[<>:"/\\|?*\x00-\x1f]/g, '') # Remove invalid filename chars
+	cleanedTitle = cleanedTitle.replace(/\s+/g, '_') # Replace whitespace with underscores
+	cleanedTitle = cleanedTitle.replace(/_+/g, '_') # Replace multiple underscores with single
+	cleanedTitle = cleanedTitle.replace(/^_|_$/g, '') # Remove leading/trailing underscores
 	
 	# Extract domain name
 	const domainName = pageConfig..domainName || pageInfos.url.split('/')[2]
+	const cleanedDomain = domainName.replace(/[^a-zA-Z0-9]/g, '_')
 	
 	# Replace placeholders
 	const replacements = {
-		'%W': domainName.replace(/[^a-zA-Z0-9]/g, '_')
+		'%W': cleanedDomain
 		'%H': pageInfos.url.split('/')[2]
-		'%T': truncatedTitle
+		'%T': cleanedTitle
 		'%t': now.getTime().toString()
 		'%Y': now.getFullYear().toString()
 		'%M': (now.getMonth() + 1).toString().padStart(2, '0')
