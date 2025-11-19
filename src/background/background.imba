@@ -34,12 +34,18 @@ browser.runtime.onInstalled.addListener do(details)
 		# Display a message according to the installation type
 		if details.reason === 'install'
 			console.log "Extension installed! Default settings applied."
+			await browser.tabs.create({url: "https://save.hugocollin.com/tutorial"})
 		elif details.reason === 'update'
 			const previousVersion = details.previousVersion
 			console.log "Extension updated from version {previousVersion}"
-	
+			await browser.tabs.create({url: "https://save.hugocollin.com/update"})
+
 	catch error
 		console.error "Error setting default options:", error
+
+	await browser.runtime.setUninstallURL 'https://save.hugocollin.com/uninstalled'
+	console.log 'Uninstall survey URL set'
+
 
 # On icon click
 actionAPI.onClicked.addListener do(currentTabInfos)
