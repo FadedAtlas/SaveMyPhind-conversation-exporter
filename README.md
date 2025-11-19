@@ -31,10 +31,10 @@
 
 - [x] Export chats from ChatGPT, Claude, Perplexity and Phind
 - [x] Clean markdown formatting and structuring
-<!-- - [x] Keep numbered sources in the exported file -->
-<!-- - [x] Keep Artifacts content (Claude) -->
 - [x] Informative file header and filename (date, url...)
 - [x] Configure your exports (filename, output...)
+<!-- - [x] Keep numbered sources in the exported file -->
+<!-- - [x] Keep Artifacts content (Claude) -->
 <!-- - [x] Indicates the chatbot response mode used (Phind-Search and Perplexity) -->
 <!-- - [x] Informative modals (updates...) -->
 
