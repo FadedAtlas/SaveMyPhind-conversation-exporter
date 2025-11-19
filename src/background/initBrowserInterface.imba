@@ -61,7 +61,7 @@ def buildContextMenu
 			when "exportPage"
 				await launchScraping(tab)
 			when "bugReport"
-				await browser.tabs.create({url: "https://save.hugocollin.com/discussion"})
+				await browser.tabs.create({url: "https://save.hugocollin.com/help"})
 
 def listenTabsToUpdateIcon
 	# Change icon when tab is updated
